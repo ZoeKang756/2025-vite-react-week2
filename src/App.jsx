@@ -14,7 +14,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [tempProduct, setTempProduct] = useState(null);
   const [primaryImage, setPrimaryImage] = useState(null);
-  const [loginErrMessage, setLoginErrMessage]  = useState(null);
+  const [loginErrMessage, setLoginErrMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     try {
@@ -26,12 +26,14 @@ function App() {
       const { token, expired } = response.data;
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
       setIsLogin(response.data.success);
-      setLoginErrMessage(!response.data.success?response.data.message:null)
+      setLoginErrMessage(!response.data.success ? response.data.message : null);
       getProducts(token);
 
       // console.log(response.data);
     } catch (error) {
       setIsLogin(false);
+      setLoginErrMessage(error.response?.data);
+      
       console.log(error.response);
     }
   };
@@ -61,13 +63,15 @@ function App() {
         config
       );
 
-
       setIsLogin(checkRes.data.success);
       getProducts(token);
+      setLoginErrMessage(!checkRes.data.success ? checkRes.data.message : null);
 
       console.log("Token 驗證結果：", checkRes.data);
     } catch (error) {
       setIsLogin(false);
+      setLoginErrMessage(error.response?.data);
+      
       console.error("Token 驗證失敗：", error.response?.data);
     }
   };
@@ -291,7 +295,13 @@ function App() {
                   登入
                 </button>
               </form>
-             { loginErrMessage ?<p className="text-danger">{loginErrMessage}，您的帳號或密碼錯誤!</p> :""}
+              {loginErrMessage ? (
+                <p className="text-danger">
+                  {loginErrMessage}，您的帳號或密碼錯誤!
+                </p>
+              ) : (
+                ""
+              )}
             </div>
           </div>
           <p className="mt-5 mb-3 text-muted">&copy; 2024~∞ - 六角學院</p>
